@@ -1,12 +1,13 @@
 ---
-title: "Team.Rmd"
-author: "Zack Larson, Julia Lundstrum, and Nikole Slinger"
+title: "individual1ZL.Rmd"
+author: "Zack Larson"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
 ## Reading the Data
 ```{r}
 choco <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/data/choco.csv") 
@@ -61,4 +62,3 @@ df2 <- df2 %>% filter(characteristicsRatings....Rating.. == 4,Characteristics1!=
 df2 <- df2 %>% group_by(Characteristics1) %>% filter(n() > 3)##Filter for most used characteristics in the high ratings
 ggplot(df2, aes(x=Characteristics1)) + geom_bar()##graph
 ```
-
