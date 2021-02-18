@@ -1,0 +1,81 @@
+---
+title: "Lab 2"
+author: "Nikole Slinger"
+output: html_document
+---
+
+#### 1. How are the ratings distributed? Create both a histogram and a boxplot and describe them. Don’t forget to mention outliers, if there are any.
+
+```{r}
+choco <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/data/choco.csv")
+
+# creating histogram of ratings
+hist(choco$Rating, main = "Chocolate Ratings", xlab = "Score", ylab = "Count")
+```
+
+When looking at the histogram, it looks to be unsymmetric, left skewed, and bimodal with a few outliers between 1.0 and 2.0. An interesting feature is the fact that there appears to be no chocolate with a score between 3.0 and 3.25, when we would expect there to be many.
+
+```{r}
+# creating boxplot of ratings
+boxplot(choco$Rating, main = "Chocolate Ratings", xlab = "Rating", ylab = "Score")
+```
+
+When looking at the boxplot, it also looks left skewed and shows clear outliers that are between 1.0 and 2.0. Based on both graphs we can see that the data for chocolate rating is clearly not symmetrical.
+
+#### 2. How does the number of ratings depend on the location of the company? Draw a bar chart of the number of reports.
+
+```{r}
+# creating bar chart to show ratings based on location
+library(ggplot2)
+ggplot(aes(x = Rating, fill = Location), data = choco) + geom_bar()
+```
+
+The location of the company appears to have little effect on the rating of the chocolate because there are multiple companies with the same location but with different chocolate ratings. For example, companies that are located in the U.S.A. seem to have ratings between about 2.0 and 4.0.
+
+#### 3. Do ratings depend on the cocoa percentage of a chocolate bar? Create both numerical and graphical summaries, and explain.
+
+```{r}
+# creating scatterplot
+plot(choco$Rating, choco$Cocoa_Percent, xlab = "Rating", ylab = "Cocoa Percent")
+# reporting correlation
+cor(choco$Rating,choco$Cocoa_Percent)
+```
+
+When looking at the scatterplot between chocolate rating and the percentage of cocoa, there seems to be no clear relationship between the two variables as the points appear random and cloud-shaped. The correlation coefficient of r = -0.151 backs this up since an r-value so close to 0 means that there is a very weak linear relationship (although the negative sign means that there is a slight negative correlation).
+
+#### 4. How do different bean origins compare in terms of the flavor of chocolates? Are beans from some places better than the other? Create both numerical and graphical summaries, and explain.
+
+```{r}
+# creating boxplots of bean origins and their ratings
+boxplot(choco$Rating ~ choco$Bean_Origin, main = "Chocolate Ratings of Different Bean Origins",
+        xlab = "Country", ylab = "Rating", las = 2)
+```
+
+From looking at the multiple boxplots, we can see that the most common median value is between 3.0 and 3.25. The country of Tobago appears to have the highest chocolate rating Interquartile Range, while Uganda seems to have the lowest chocolate rating Interquartile Range.
+
+```{r}
+# only using top 100
+ratings = choco[order(ave(choco$Rating), decreasing= TRUE), ]
+ratings = ratings[1:50, ]
+ggplot(ratings, aes(x = Bean_Origin, y = Rating)) + geom_count() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+From this plot, it's important to note that we are only looking at the top 100 ratings for bean origins. Based on this, we can see that the majority of the countries on this graph are from South America and virtually all are located near the equator. From this, we can see that better chocolate ratings are correlated with countries with hot and rainy climates, specifically Peru which has noticeably higher chocolate ratings compared to the other countries.
+
+#### 5. Brainstorm two analyses you would like to perform (with your teammates). Describe in plain language what comparisons are you making. Create suitable numerical and graphical summaries for your analyses. Describe the results.
+
+```{r}
+library(tidyverse)
+
+# looking at companies with highest chocolate ratings
+companydata <- choco[,c(2, 13)]
+codata <- data.frame(company = c(companydata[,"Company"]), companydata[,"Rating"])
+topcompanies <- aggregate(companydata....Rating..~company, codata, FUN=mean)
+# finding companies with chocolate ratings above 3.75
+topcompanies <- topcompanies %>% slice_max(companydata....Rating.. > 3.75)
+topcompanies
+```
+
+For my analysis I looked for the companies with the top average chocolate rating. I found that the  companies returned above had the highest chocolate ratings (those above 3.75). The location of the companies include U.S.A, Switzerland, Austrailia, Scotland, and France while the bean origins include Bolivia, Venezuela, Madagascar, and Tobago (among others).
+
