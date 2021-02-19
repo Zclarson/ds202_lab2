@@ -15,26 +15,28 @@ str(choco)
 
 ## Searching for the Best Chocolates
 #### 1.
-The ratings are distributed unevenly. As you can see in the histogram, there are a lot more ratings greater than 2.5 than lower than 2.5. In the box plot, you can also see that the data is more relevant in the upper ratings like 3 and 3.5 than down below in the 2.5 and 2 ratings, Since the ratings vary from 1-4, the average before data should be around 2.5 but is in fact 3.184 showing that its skewed more to the higher ratings.There are not many outliers, there are a few 1 ratings, but overall that is expected with such a large collection of data.
+The ratings are distributed unevenly. As you can see in the histogram, there are a lot more ratings greater than 2.5 than lower than 2.5, making it unsymmetrical and left skewed. An interesting feature is the fact that there appears to be no chocolate with a rating between 3.0 and 3.25 when we would expect there to be many. There are also a few outliers visible below 2.0.
+
+In the box plot, you can also see that the data is more relevant in the upper ratings like 3 and 3.5 than down below in the 2.5 and 2 ratings, Since the ratings vary from 1.0 to 4.0, the average for the data should be around 2.5 but is in fact 3.184 showing that it's skewed more to the higher ratings. There are not many outliers, there are a few 1.0 ratings, but overall that is expected with such a large collection of data.
 ```{r}
 ratings <- choco$Rating
 hist(ratings)
-boxplot(ratings)
+boxplot(ratings, main = 'Chocolate Rating', ylab = 'Rating')
 averageRating <- mean(ratings)
 averageRating
 ```
 
 #### 2.
-The number of ratings depend on the location of the company because some places might not have as many reviewers in their area as opposed to others.For example, there are a lot more ratings of Australian companies than Czech Republic companies because the population of Australia is that much bigger.
+The location of the company appears to have little effect on the rating of the chocolate because there are multiple companies with the same location but with different chocolate ratings. For example, companies that are located in U.S.A. seem to have ratings that range between about 2.0 and 4.0. However, one way that location may have a small effect on chocolate rating is that there may be more reviewers in one country than in another. For example, there are a lot more ratings of Australian companies than Czech Republic companies because the population of Australia is that much bigger.
 ```{r}
 library(ggplot2)
 ggplot(aes(x = Rating,fill=Location),data=choco) + geom_bar()
 ```
 
 #### 3.
-As shown in the scatter plot, the columns showing the cocoa percentage and the rating of the chocolate bar has no relation at all. Also as shown in the cor() function, the 2 columns show no strength of correlation at all too.A scatter plot is not the best choice here because there are so many ratings and cocoa percentages that are similar or equal in value so overlapping in values shown in the scatter plot can be overlooked. 
+As shown in the scatter plot, the columns showing the cocoa percentage and the rating of the chocolate bar seem to have no linear relationship at all. Also as shown in the cor() function, the correlation coefficient is r = -0.151, meaning that the 2 variables show extremely little strength of correlation (if anything, there is a very small negative correlation). One note to make is that a scatter plot is not the best choice of graph here because there are so many ratings and cocoa percentages that are similar or equal in value so overlapping in values shown in the scatter plot can be overlooked. 
 ```{r}
-plot(choco$Rating,choco$Cocoa_Percent)
+plot(choco$Rating,choco$Cocoa_Percent, main = 'Chocolate Rating vs. Cocoa Percent', xlab = 'Rating', ylab = 'Cocoa Percentage')
 cor(choco$Rating,choco$Cocoa_Percent)
 ```
 ## Collaboration Workflow - Zack Larson
@@ -62,3 +64,39 @@ df2 <- df2 %>% group_by(Characteristics1) %>% filter(n() > 3)##Filter for most u
 ggplot(df2, aes(x=Characteristics1)) + geom_bar()##graph
 ```
 
+## Collaboration Workflow - Nikole Slinger
+#### 4.
+
+```{r}
+# creating boxplots of bean origins and their ratings
+boxplot(choco$Rating ~ choco$Bean_Origin, main = "Chocolate Ratings of Different Bean Origins",
+        xlab = "Country", ylab = "Rating", las = 2)
+```
+
+From looking at the multiple boxplots, we can see that the most common median value is between 3.0 and 3.25. The country of Tobago appears to have the highest chocolate rating interquartile range, while Uganda seems to have the lowest chocolate rating interquartile range.
+
+```{r}
+# only using top 50
+ratings = choco[order(ave(choco$Rating), decreasing= TRUE), ]
+ratings = ratings[1:50, ]
+ggplot(ratings, aes(x = Bean_Origin, y = Rating)) + geom_count() +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+From this plot, it's important to note that we are only looking at the top 100 ratings for bean origins. Based on this, we can see that the majority of the countries on this graph are from South America and virtually all are located near the equator. From this, we can see that better chocolate ratings are correlated with countries with hot and rainy climates, specifically Peru, which has noticeably higher chocolate ratings compared to the other countries.
+
+#### 5.
+
+```{r}
+library(tidyverse)
+
+# looking at companies with highest chocolate ratings
+companydata <- choco[,c(2, 13)]
+codata <- data.frame(company = c(companydata[,"Company"]), companydata[,"Rating"])
+topcompanies <- aggregate(companydata....Rating..~company, codata, FUN=mean)
+# finding companies with chocolate ratings above 3.75
+topcompanies <- topcompanies %>% slice_max(companydata....Rating.. > 3.75)
+topcompanies
+```
+
+For my analysis I looked for the companies with the top average chocolate rating. I found that the  companies returned above had the highest chocolate ratings (those above 3.75). The location of these companies include U.S.A, Switzerland, Australia, Scotland, and France while the bean origins include Bolivia, Venezuela, Madagascar, and Tobago (among others). Even though the company locations are not located where the beans come from, we know from previous anaylses that bean origin is what has a larger effect on chocolate rating.
