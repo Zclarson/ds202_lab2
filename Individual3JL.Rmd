@@ -1,0 +1,66 @@
+---
+title: "Individual3"
+author: "Julia Lundstrum"
+date: "2/15/2021"
+output: html_document
+---
+# Individual 3 - Julia Lundstrum
+```{r}
+choco <- read.csv("https://raw.githubusercontent.com/xdaiISU/ds202materials/master/hwlabs/data/choco.csv")
+```
+## Searching for the Best Chocolates
+### How are the ratings distributed?
+```{r}
+hist(choco$Rating, col = "navy")
+boxplot(choco$Rating, col = "orange")
+```
+
+#### The histogram is bimodal with peaks at 3.0 and 3.5. There appear to be multiple lower outliers.
+
+#### The boxplot's first quartile is around 3.0 and its second quartile is around 3.5, giving it an IQR of about 0.5. Its mean appears to be about 3.25. The range is from approximately 2.0 to 4.0. It has four outliers below the range.
+
+### How does the number of ratings depend on the location of the company?
+
+```{r}
+freq <- table(choco$Location)
+barplot(freq, main = "Number of Ratings", xlab = "Locations", col = "red")
+```
+
+### Do ratings depend on the cacao percentage of a chocolate bar?
+```{r}
+library(ggplot2)
+new <- choco[, c('Cocoa_Percent','Rating')]
+corr <- round(cor(new),2)
+corr
+summary(new)
+newdf <- choco
+newdf$Rating=factor(newdf$Rating)
+ggplot(newdf, aes(Cocoa_Percent, fill = Rating)) + geom_histogram(bins = 20) + ggtitle("Ratings of Cocoa Percents") + ylab("Number of Ratings") + xlab("Cocoa Percent")
+```
+
+#### There does not appear to be a relationship between cocoa percent and rating
+
+### How do different bean origins compare in terms of the flavor of chocolates? Are beans from some places better than the other? Create both numerical and graphical summaries, and explain
+```{r}
+new2 <- choco[, c('Bean_Origin','Rating')]
+aggregate(new2[, 2], list(new2$Bean_Origin), mean)
+ggplot(newdf, aes(Bean_Origin, fill = Rating)) + geom_bar() + ggtitle("Ratings of Bean Origins") + ylab("Number of Ratings") + xlab("Bean Origin") + theme(axis.text.x = element_text(angle = 90))
+boxplot(choco$Rating ~ choco$Bean_Origin, col=c("green","yellow","navy","orange"), main = "Ratings by Bean Origin", xlab = "Bean Origin", ylab = "Rating", las = 2)
+```
+
+#### There does not appear to be a significant relationship between bean origin and the rating of the chocolate. The mean rating for the different bean origins are about the same. There are a few that are a bit higher, but the sample size is not large enough to determine if that was just by chance.
+
+### Brainstorm two analyses you would like to perform (with your teammates). Describe in plain language what comparisons are you making. Create suitable numerical and graphical summaries for your analyses. Describe the results.
+```{r}
+new3 <- choco[, c('Date','Rating')]
+corr2 <- round(cor(new3),2)
+corr2
+summary(new3)
+newdf2 <- choco
+newdf2$Rating=factor(newdf2$Rating)
+newdf2$Date=factor(newdf2$Date)
+ggplot(newdf2, aes(Date, fill = Rating)) + geom_bar() + ggtitle("Ratings by Year") + ylab("Number of Ratings") + xlab("Year")
+boxplot(choco$Rating ~ choco$Date, col=c("skyblue","royalblue","ivory","navy","springgreen"), main = "Ratings by Year", xlab = "Year", ylab = "Rating", las = 2)
+```
+
+#### I decided to analyze the relationship between ratings and what year they were rated. There is not a correlation between the year rated and rating received. I used a stacked bar graph and box plots to analyze the data. 

@@ -20,17 +20,17 @@ The ratings are distributed unevenly. As you can see in the histogram, there are
 In the box plot, you can also see that the data is more relevant in the upper ratings like 3 and 3.5 than down below in the 2.5 and 2 ratings, Since the ratings vary from 1.0 to 4.0, the average for the data should be around 2.5 but is in fact 3.184 showing that it's skewed more to the higher ratings. There are not many outliers, there are a few 1.0 ratings, but overall that is expected with such a large collection of data.
 ```{r}
 ratings <- choco$Rating
-hist(ratings)
-boxplot(ratings, main = 'Chocolate Rating', ylab = 'Rating')
+hist(ratings, col = "navy")
+boxplot(ratings, main = 'Chocolate Rating', ylab = 'Rating', col = "orange")
 averageRating <- mean(ratings)
 averageRating
 ```
 
 #### 2.
 The location of the company appears to have little effect on the rating of the chocolate because there are multiple companies with the same location but with different chocolate ratings. For example, companies that are located in U.S.A. seem to have ratings that range between about 2.0 and 4.0. However, one way that location may have a small effect on chocolate rating is that there may be more reviewers in one country than in another. For example, there are a lot more ratings of Australian companies than Czech Republic companies because the population of Australia is that much bigger.
-```{r}
+```{r, fig.width=5, fig.height=8}
 library(ggplot2)
-ggplot(aes(x = Rating,fill=Location),data=choco) + geom_bar()
+ggplot(aes(x = Rating,fill=Location),data=choco) + geom_histogram(bins = 13) + theme(legend.position = "bottom")
 ```
 
 #### 3.
@@ -38,6 +38,9 @@ As shown in the scatter plot, the columns showing the cocoa percentage and the r
 ```{r}
 plot(choco$Rating,choco$Cocoa_Percent, main = 'Chocolate Rating vs. Cocoa Percent', xlab = 'Rating', ylab = 'Cocoa Percentage')
 cor(choco$Rating,choco$Cocoa_Percent)
+newdf <- choco
+newdf$Rating=factor(newdf$Rating)
+ggplot(newdf, aes(Cocoa_Percent, fill = Rating)) + geom_histogram(bins = 20) + ggtitle("Ratings of Cocoa Percents") + ylab("Number of Ratings") + xlab("Cocoa Percent")
 ```
 ## Collaboration Workflow - Zack Larson
 #### 4.
@@ -100,3 +103,29 @@ topcompanies
 ```
 
 For my analysis I looked for the companies with the top average chocolate rating. I found that the  companies returned above had the highest chocolate ratings (those above 3.75). The location of these companies include U.S.A, Switzerland, Australia, Scotland, and France while the bean origins include Bolivia, Venezuela, Madagascar, and Tobago (among others). Even though the company locations are not located where the beans come from, we know from previous anaylses that bean origin is what has a larger effect on chocolate rating.
+
+## Collaboration Workflow - Julia Lundstrum
+#### 4.
+```{r}
+new2 <- choco[, c('Bean_Origin','Rating')]
+aggregate(new2[, 2], list(new2$Bean_Origin), mean)
+ggplot(newdf, aes(Bean_Origin, fill = Rating)) + geom_bar() + ggtitle("Ratings of Bean Origins") + ylab("Number of Ratings") + xlab("Bean Origin") + theme(axis.text.x = element_text(angle = 90))
+boxplot(choco$Rating ~ choco$Bean_Origin, col=c("green","yellow","navy","orange"), main = "Ratings by Bean Origin", xlab = "Bean Origin", ylab = "Rating", las = 2)
+```
+
+There does not appear to be a significant relationship between bean origin and the rating of the chocolate. The mean rating for the different bean origins are about the same. There are a few that are a bit higher, but the sample size is not large enough to determine if that was just by chance.
+
+#### 5.
+```{r}
+new3 <- choco[, c('Date','Rating')]
+corr2 <- round(cor(new3),2)
+corr2
+summary(new3)
+newdf2 <- choco
+newdf2$Rating=factor(newdf2$Rating)
+newdf2$Date=factor(newdf2$Date)
+ggplot(newdf2, aes(Date, fill = Rating)) + geom_bar() + ggtitle("Ratings by Year") + ylab("Number of Ratings") + xlab("Year")
+boxplot(choco$Rating ~ choco$Date, col=c("skyblue","royalblue","ivory","navy","springgreen"), main = "Ratings by Year", xlab = "Year", ylab = "Rating", las = 2)
+```
+
+I decided to analyze the relationship between ratings and what year they were rated. There is not a correlation between the year rated and rating received. I used a stacked bar graph and box plots to analyze the data. 
